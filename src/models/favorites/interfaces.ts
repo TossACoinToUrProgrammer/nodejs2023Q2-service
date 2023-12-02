@@ -1,15 +1,15 @@
-import { Album } from '../albums/interfaces';
-import { Artist } from '../artists/interfaces';
-import { Track } from '../tracks/interfaces';
+import { IAlbum } from '../albums/interfaces';
+import { IArtist } from '../artists/interfaces';
+import { ITrack } from '../tracks/interfaces';
 
-export interface Favorites {
+export interface IFavorites {
   artists: string[]; // favorite artists ids
   albums: string[]; // favorite albums ids
   tracks: string[]; // favorite tracks ids
 }
 
-export interface FavoritesResponse {
-  artists: Artist[];
-  albums: Album[];
-  tracks: Track[];
+export interface IFavoritesResponse {
+  artists: IArtist[];
+  albums: IAlbum[];
+  tracks: ITrack[];
 }

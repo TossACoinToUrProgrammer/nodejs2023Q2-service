@@ -1,55 +1,98 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { UpdateTrackDto } from './dto/update-track';
 import { CreateTrackDto } from './dto/create-track';
-import {
-  createTrack,
-  deleteTrack,
-  getTrack,
-  getTracks,
-  updateTrack,
-} from 'src/database/tracks';
+import { Track } from './entities/track.entity';
+import { Artist } from '../artists/entities/artist.entity';
+import { Album } from '../albums/entities/album.entity';
+import { checkById } from 'src/helpers/checkById';
+import { Favorite } from '../favorites/entities/favorites.entity';
 
 @Injectable()
 export class TracksService {
-  getTracks() {
-    return getTracks();
-  }
+  constructor(
+    @InjectRepository(Track)
+    private readonly trackRepository: Repository<Track>,
+    @InjectRepository(Artist)
+    private readonly artistRepository: Repository<Artist>,
+    @InjectRepository(Album)
+    private readonly albumRepository: Repository<Album>,
+    @InjectRepository(Favorite)
+    private readonly favoritesRepository: Repository<Favorite>,
+  ) {}
 
-  getTrack(id: string) {
-    const track = getTrack(id);
+  async getTracks() {
+    return this.trackRepository.find();
+  } 
+
+  async getTrack(id: string) {
+    const track = await this.trackRepository.findOneBy({ id });
     if (!track) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     return track;
   }
 
-  createTrack(createTrackDto: CreateTrackDto) {
-    const newTrack = {
-      id: uuidv4(),
-      artistId: createTrackDto.artistId || null,
-      albumId: createTrackDto.albumId || null,
-      ...createTrackDto,
-    };
-    createTrack(newTrack);
-    return newTrack;
+  async createTrack(createTrackDto: CreateTrackDto) {
+    const { artistId, albumId } = createTrackDto;
+    if (artistId) {
+      await checkById(
+        artistId,
+        this.artistRepository,
+        'Invalid artistId. Artist with such id doesnt exist',
+      );
+    }
+    if (albumId) {
+      await checkById(
+        albumId,
+        this.albumRepository,
+        'Invalid albumId. Album with such id doesnt exist',
+      );
+    }
+    const newTrack = this.trackRepository.create(createTrackDto);
+    return this.trackRepository.save(newTrack);
   }
 
-  updateTrack(id: string, updatedTrackDto: UpdateTrackDto) {
-    let track = getTrack(id);
+  async updateTrack(id: string, updatedTrackDto: UpdateTrackDto) {
+    const track = await this.trackRepository.findOneBy({ id });
     if (!track) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
 
-    track = {
-      id: track.id,
-      ...updatedTrackDto,
-    };
-    updateTrack(track);
-    return track;
+    const { artistId, albumId } = updatedTrackDto;
+    if (artistId) {
+      await checkById(
+        artistId,
+        this.artistRepository,
+        'Invalid artistId. Artist with such id doesnt exist',
+      );
+    }
+    if (albumId) {
+      await checkById(
+        albumId,
+        this.albumRepository,
+        'Invalid albumId. Album with such id doesnt exist',
+      );
+    }
+
+    const updatedTrack = await this.trackRepository.merge(
+      track,
+      updatedTrackDto,
+    );
+    return await this.trackRepository.save(updatedTrack);
   }
 
-  deleteTrack(id: string) {
-    let track = getTrack(id);
+  async deleteTrack(id: string) {
+    const track = await this.trackRepository.findOneBy({ id });
     if (!track) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-    deleteTrack(id);
+
+    await this.favoritesRepository
+      .createQueryBuilder()
+      .update(Favorite)
+      .set({
+        tracks: () => `array_remove("tracks", '${id}')`,
+      })
+      .execute();
+
+    await this.trackRepository.remove(track);
     return { message: 'Track deleted' };
   }
 }

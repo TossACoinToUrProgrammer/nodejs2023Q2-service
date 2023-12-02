@@ -1,53 +1,86 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { UpdateAlbumDto } from './dto/update-album';
 import { CreateAlbumDto } from './dto/create-album';
-import {
-  createAlbum,
-  deleteAlbum,
-  getAlbum,
-  getAlbums,
-  updateAlbum,
-} from 'src/database/albums';
+import { Album } from './entities/album.entity';
+import { checkById } from 'src/helpers/checkById';
+import { Favorite } from '../favorites/entities/favorites.entity';
+import { Track } from '../tracks/entities/track.entity';
 
 @Injectable()
 export class AlbumsService {
-  getAlbums() {
-    return getAlbums();
+  constructor(
+    @InjectRepository(Album)
+    private readonly albumRepository: Repository<Album>,
+    @InjectRepository(Favorite)
+    private readonly favoritesRepository: Repository<Favorite>,
+    @InjectRepository(Track)
+    private readonly trackRepository: Repository<Track>,
+  ) {}
+
+  async getAlbums() {
+    return this.albumRepository.find();
   }
 
-  getAlbum(id: string) {
-    const album = getAlbum(id);
+  async getAlbum(id: string) {
+    const album = await this.albumRepository.findOneBy({ id });
     if (!album) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     return album;
   }
 
-  createAlbum(createAlbumDto: CreateAlbumDto) {
-    const newAlbum = {
-      id: uuidv4(),
-      ...createAlbumDto,
-    };
-    createAlbum(newAlbum);
-    return newAlbum;
+  async createAlbum(createAlbumDto: CreateAlbumDto) {
+    if (createAlbumDto.artistId) {
+      await checkById(
+        createAlbumDto.artistId,
+        this.albumRepository,
+        'Invalid artistId. Artist with such id doesnt exist',
+      );
+    }
+    const newTrack = this.albumRepository.create(createAlbumDto);
+    return this.albumRepository.save(newTrack);
   }
 
-  updateAlbum(id: string, updatedAlbumDto: UpdateAlbumDto) {
-    let album = getAlbum(id);
+  async updateAlbum(id: string, updatedAlbumDto: UpdateAlbumDto) {
+    const album = await this.albumRepository.findOneBy({ id });
     if (!album) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
 
-    album = {
-      id: album.id,
-      ...updatedAlbumDto,
-    };
-    updateAlbum(album);
-    return album;
+    if (updatedAlbumDto.artistId) {
+      await checkById(
+        updatedAlbumDto.artistId,
+        this.albumRepository,
+        'Invalid artistId. Artist with such id doesnt exist',
+      );
+    }
+
+    const updatedTrack = await this.albumRepository.merge(
+      album,
+      updatedAlbumDto,
+    );
+    return await this.albumRepository.save(updatedTrack);
   }
 
-  deleteAlbum(id: string) {
-    let album = getAlbum(id);
+  async deleteAlbum(id: string) {
+    const album = await this.albumRepository.findOneBy({ id });
     if (!album) throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-    deleteAlbum(id);
+
+    await this.trackRepository
+      .createQueryBuilder()
+      .update(Track)
+      .set({ albumId: null })
+      .where('albumId = :albumId', { albumId: id })
+      .execute();
+
+    await this.favoritesRepository
+      .createQueryBuilder()
+      .update(Favorite)
+      .set({
+        albums: () => `array_remove("albums", '${id}')`,
+      })
+      .execute();
+
+    await this.albumRepository.remove(album);
     return { message: 'Album deleted' };
   }
 }
