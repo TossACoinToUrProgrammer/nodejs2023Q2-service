@@ -8,13 +8,13 @@ import { UsersModule } from './modules/users/users.module';
 import { TracksModule } from './modules/tracks/tracks.module';
 import { ArtistsModule } from './modules/artists/artists.module';
 import { FavoritesModule } from './modules/favorites/favorites.module';
-import * as config from '../ormconfig.js'
+import * as config from '../ormconfig.js';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env'
+      envFilePath: '.env',
     }),
     TypeOrmModule.forRoot(config),
     AlbumsModule,

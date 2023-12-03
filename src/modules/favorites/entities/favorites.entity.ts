@@ -3,7 +3,7 @@ import { Entity, PrimaryColumn, Column } from 'typeorm';
 @Entity()
 export class Favorite {
   @PrimaryColumn()
-  id: string = 'favs';
+  id = 'favs';
 
   @Column('text', { array: true, default: [] })
   artists: string[];

@@ -45,7 +45,7 @@ export class FavoritesService {
   async getFavs() {
     const favs = await this.favoritesRepository.findOneBy({ id: 'favs' });
 
-    let mappedFavs = {};
+    const mappedFavs = {};
 
     for (const key in favs) {
       if (key === 'artists') {

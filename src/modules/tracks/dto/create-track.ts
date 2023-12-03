@@ -15,4 +15,3 @@ export class CreateTrackDto {
   @IsNumber({}, { message: 'Duration id must be a number' })
   duration: number;
 }
-

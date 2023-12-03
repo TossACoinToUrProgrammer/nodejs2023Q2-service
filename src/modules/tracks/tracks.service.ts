@@ -25,7 +25,7 @@ export class TracksService {
 
   async getTracks() {
     return this.trackRepository.find();
-  } 
+  }
 
   async getTrack(id: string) {
     const track = await this.trackRepository.findOneBy({ id });
