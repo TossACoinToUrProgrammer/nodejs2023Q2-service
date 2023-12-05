@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -9,7 +10,8 @@ import { TracksModule } from './modules/tracks/tracks.module';
 import { ArtistsModule } from './modules/artists/artists.module';
 import { FavoritesModule } from './modules/favorites/favorites.module';
 import * as config from '../ormconfig.js';
-import { ConfigModule } from '@nestjs/config';
+import { LoggingMiddleware } from './common/middlewares/logging.middleware';
+import { LoggingModule } from './common/custom-logger/custom-logger.module';
 
 @Module({
   imports: [
@@ -22,8 +24,13 @@ import { ConfigModule } from '@nestjs/config';
     TracksModule,
     ArtistsModule,
     FavoritesModule,
+    LoggingModule
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggingMiddleware).forRoutes('*'); // Apply for every route
+  }
+}
