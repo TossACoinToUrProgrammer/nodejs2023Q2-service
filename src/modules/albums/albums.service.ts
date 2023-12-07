@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { UpdateAlbumDto } from './dto/update-album';
 import { CreateAlbumDto } from './dto/create-album';
 import { Album } from './entities/album.entity';
-import { checkById } from 'src/helpers/checkById';
+import { checkById } from 'src/common/helpers/checkById';
 import { Favorite } from '../favorites/entities/favorites.entity';
 import { Track } from '../tracks/entities/track.entity';
 

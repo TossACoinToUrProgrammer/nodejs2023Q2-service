@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Param, Delete } from '@nestjs/common';
 
 import { FavoritesService } from './favorites.service';
-import { UuidValidationPipe } from 'src/pipes/user-id-validation.pipe';
+import { UuidValidationPipe } from 'src/common/pipes/user-id-validation.pipe';
 
 @Controller('favs')
 export class FavoritesController {

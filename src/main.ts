@@ -1,8 +1,11 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import * as cookieParser from 'cookie-parser';
 import 'dotenv/config';
-import { LoggingService } from './common/custom-logger/custom-logger.service';
+
+import { AppModule } from './app.module';
+import { LoggingService } from './common/services/custom-logger/custom-logger.service';
 import { CustomExceptionFilter } from './common/filters/exception.filter';
+import { JwtAuthMiddleware } from './common/middlewares/jwt-auth.middleware';
 
 const port = process.env.PORT || 4000;
 
@@ -13,8 +16,18 @@ async function bootstrap() {
     bufferLogs: true,
   });
 
+  app.use(cookieParser());
+
   app.useLogger(loggingService);
   app.useGlobalFilters(new CustomExceptionFilter(loggingService));
+
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: 'Authorization, Origin, Content-Type, Accept',
+    credentials: true,
+  });
+
   await app.listen(port);
 }
 bootstrap();

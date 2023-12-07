@@ -9,7 +9,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 
-import { UuidValidationPipe } from 'src/pipes/user-id-validation.pipe';
+import { UuidValidationPipe } from 'src/common/pipes/user-id-validation.pipe';
 import { UpdateTrackDto } from './dto/update-track';
 import { CreateTrackDto } from './dto/create-track';
 import { TracksService } from './tracks.service';

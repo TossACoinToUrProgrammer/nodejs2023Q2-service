@@ -1,4 +1,4 @@
-import { Module, MiddlewareConsumer } from '@nestjs/common';
+import { Module, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 
@@ -11,7 +11,9 @@ import { ArtistsModule } from './modules/artists/artists.module';
 import { FavoritesModule } from './modules/favorites/favorites.module';
 import * as config from '../ormconfig.js';
 import { LoggingMiddleware } from './common/middlewares/logging.middleware';
-import { LoggingModule } from './common/custom-logger/custom-logger.module';
+import { LoggingModule } from './common/services/custom-logger/custom-logger.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { JwtAuthMiddleware } from './common/middlewares/jwt-auth.middleware';
 
 @Module({
   imports: [
@@ -24,13 +26,24 @@ import { LoggingModule } from './common/custom-logger/custom-logger.module';
     TracksModule,
     ArtistsModule,
     FavoritesModule,
-    LoggingModule
+    LoggingModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggingMiddleware).forRoutes('*'); // Apply for every route
+    consumer
+      .apply(LoggingMiddleware)
+      .forRoutes('*')
+      .apply(JwtAuthMiddleware)
+      .forRoutes(
+        { path: 'users', method: RequestMethod.ALL },
+        { path: 'tracks', method: RequestMethod.ALL },
+        { path: 'albums', method: RequestMethod.ALL },
+        { path: 'favs', method: RequestMethod.ALL },
+        { path: 'artists', method: RequestMethod.ALL },
+      );
   }
 }

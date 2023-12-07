@@ -7,7 +7,7 @@ import { CreateTrackDto } from './dto/create-track';
 import { Track } from './entities/track.entity';
 import { Artist } from '../artists/entities/artist.entity';
 import { Album } from '../albums/entities/album.entity';
-import { checkById } from 'src/helpers/checkById';
+import { checkById } from 'src/common/helpers/checkById';
 import { Favorite } from '../favorites/entities/favorites.entity';
 
 @Injectable()

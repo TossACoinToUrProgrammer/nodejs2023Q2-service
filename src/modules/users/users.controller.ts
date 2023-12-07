@@ -9,7 +9,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 
-import { UuidValidationPipe } from 'src/pipes/user-id-validation.pipe';
+import { UuidValidationPipe } from 'src/common/pipes/user-id-validation.pipe';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user';
 import { UpdatePasswordDto } from './dto/update-password';
