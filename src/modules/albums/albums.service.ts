@@ -8,6 +8,7 @@ import { Album } from './entities/album.entity';
 import { checkById } from 'src/common/helpers/checkById';
 import { Favorite } from '../favorites/entities/favorites.entity';
 import { Track } from '../tracks/entities/track.entity';
+import { Artist } from '../artists/entities/artist.entity';
 
 @Injectable()
 export class AlbumsService {
@@ -18,6 +19,8 @@ export class AlbumsService {
     private readonly favoritesRepository: Repository<Favorite>,
     @InjectRepository(Track)
     private readonly trackRepository: Repository<Track>,
+    @InjectRepository(Artist)
+    private readonly artistRepository: Repository<Artist>,
   ) {}
 
   async getAlbums() {
@@ -34,7 +37,7 @@ export class AlbumsService {
     if (createAlbumDto.artistId) {
       await checkById(
         createAlbumDto.artistId,
-        this.albumRepository,
+        this.artistRepository,
         'Invalid artistId. Artist with such id doesnt exist',
       );
     }
@@ -49,7 +52,7 @@ export class AlbumsService {
     if (updatedAlbumDto.artistId) {
       await checkById(
         updatedAlbumDto.artistId,
-        this.albumRepository,
+        this.artistRepository,
         'Invalid artistId. Artist with such id doesnt exist',
       );
     }

@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   ValidationPipe,
+  HttpCode
 } from '@nestjs/common';
 
 import { UuidValidationPipe } from 'src/common/pipes/user-id-validation.pipe';
@@ -14,7 +15,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user';
 import { UpdatePasswordDto } from './dto/update-password';
 
-@Controller('users')
+@Controller('user')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -42,6 +43,7 @@ export class UsersController {
   }
 
   @Delete('/:id')
+  @HttpCode(204)
   deleteUser(@Param('id', UuidValidationPipe) id: string) {
     return this.usersService.deleteUser(id);
   }

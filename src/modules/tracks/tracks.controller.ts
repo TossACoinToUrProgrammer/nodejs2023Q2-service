@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   ValidationPipe,
+  HttpCode
 } from '@nestjs/common';
 
 import { UuidValidationPipe } from 'src/common/pipes/user-id-validation.pipe';
@@ -14,7 +15,7 @@ import { UpdateTrackDto } from './dto/update-track';
 import { CreateTrackDto } from './dto/create-track';
 import { TracksService } from './tracks.service';
 
-@Controller('tracks')
+@Controller('track')
 export class TracksController {
   constructor(private readonly tracksService: TracksService) {}
 
@@ -42,6 +43,7 @@ export class TracksController {
   }
 
   @Delete('/:id')
+  @HttpCode(204)
   deleteTrack(@Param('id', UuidValidationPipe) id: string) {
     return this.tracksService.deleteTrack(id);
   }
