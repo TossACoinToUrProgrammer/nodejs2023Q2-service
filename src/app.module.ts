@@ -39,11 +39,16 @@ export class AppModule {
       .forRoutes('*')
       .apply(JwtAuthMiddleware)
       .forRoutes(
-        { path: 'users', method: RequestMethod.ALL },
-        { path: 'tracks', method: RequestMethod.ALL },
-        { path: 'albums', method: RequestMethod.ALL },
+        { path: 'user', method: RequestMethod.ALL },
+        { path: 'track', method: RequestMethod.ALL },
+        { path: 'album', method: RequestMethod.ALL },
         { path: 'favs', method: RequestMethod.ALL },
-        { path: 'artists', method: RequestMethod.ALL },
+        { path: 'artist', method: RequestMethod.ALL },
+        { path: 'user/*', method: RequestMethod.ALL },
+        { path: 'track/*', method: RequestMethod.ALL },
+        { path: 'album/*', method: RequestMethod.ALL },
+        { path: 'favs/*', method: RequestMethod.ALL },
+        { path: 'artist/*', method: RequestMethod.ALL },
       );
   }
 }

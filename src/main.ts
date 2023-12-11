@@ -5,7 +5,6 @@ import 'dotenv/config';
 import { AppModule } from './app.module';
 import { LoggingService } from './common/services/custom-logger/custom-logger.service';
 import { CustomExceptionFilter } from './common/filters/exception.filter';
-import { JwtAuthMiddleware } from './common/middlewares/jwt-auth.middleware';
 
 const port = process.env.PORT || 4000;
 
