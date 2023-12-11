@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Param, Delete, HttpCode } from '@nestjs/common';
 
 import { FavoritesService } from './favorites.service';
 import { UuidValidationPipe } from 'src/pipes/user-id-validation.pipe';
@@ -18,6 +18,7 @@ export class FavoritesController {
   }
 
   @Delete('/track/:id')
+  @HttpCode(204)
   deleteTrack(@Param('id', UuidValidationPipe) id: string) {
     return this.favoritesService.deleteTrack(id);
   }
@@ -28,6 +29,7 @@ export class FavoritesController {
   }
 
   @Delete('/album/:id')
+  @HttpCode(204)
   deleteAlbum(@Param('id', UuidValidationPipe) id: string) {
     return this.favoritesService.deleteAlbum(id);
   }
@@ -38,6 +40,7 @@ export class FavoritesController {
   }
 
   @Delete('/artist/:id')
+  @HttpCode(204)
   deleteArtist(@Param('id', UuidValidationPipe) id: string) {
     return this.favoritesService.deleteArtist(id);
   }

@@ -6,10 +6,11 @@ import { AlbumsService } from './albums.service';
 import { Album } from './entities/album.entity';
 import { Favorite } from '../favorites/entities/favorites.entity';
 import { Track } from '../tracks/entities/track.entity';
+import { Artist } from '../artists/entities/artist.entity';
 
 @Module({
   controllers: [AlbumsController],
   providers: [AlbumsService],
-  imports: [TypeOrmModule.forFeature([Album, Favorite, Track])],
+  imports: [TypeOrmModule.forFeature([Album, Favorite, Track, Artist])],
 })
 export class AlbumsModule {}
