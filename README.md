@@ -1,3 +1,11 @@
+# Docker
+Create .env file, and fill it like .env.example, but with actual credentials
+
+To run application in docker you need to run "docker-compose up" command
+
+To run start:dev locally you will need to change POSTGRES_HOST in .env to "localhost"
+To run server in docker POSTGRES_HOST must be "postgres"
+
 # Home Library Service
 
 ## Prerequisites

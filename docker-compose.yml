@@ -1,0 +1,30 @@
+version: '3.0'
+
+services:
+  main:
+    image: arlenmanasov/nodejs2023q2-service-main:latest
+    build:
+      context: .
+    env_file:
+      - .env
+    ports:
+      - 4000:4000
+    command: npm run start:prod
+    depends_on:
+      - postgres
+    restart: always
+
+  postgres:
+    image: postgres:latest
+    env_file:
+      - .env
+    environment:
+      PG_DATA: /var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  pgdata:
